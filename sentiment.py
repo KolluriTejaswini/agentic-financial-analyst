@@ -1,21 +1,28 @@
-def get_sentiment():
-    news = [
-        "Stock market is growing",
-        "Economic slowdown fears"
-    ]
+import requests
+from transformers import pipeline
 
-    positive_words = {"growing", "growth", "gain", "gains", "up", "bullish", "strong"}
-    negative_words = {"slowdown", "fear", "fears", "loss", "losses", "down", "bearish", "weak"}
+API_KEY = "64e143b304be489ea2adf2ae99cb77a6"
+
+sentiment_model = pipeline("sentiment-analysis")
+
+def get_sentiment(stock):
+
+    url = f"https://newsapi.org/v2/everything?q={stock}&apiKey={API_KEY}"
+    response = requests.get(url)
+    articles = response.json()["articles"][:5]
+
+    headlines = [article["title"] for article in articles]
+
+    if not headlines:
+        return 0
+
+    results = sentiment_model(headlines)
 
     score = 0
-    for headline in news:
-        words = set(headline.lower().replace(",", "").replace(".", "").split())
-        pos_hits = len(words & positive_words)
-        neg_hits = len(words & negative_words)
-
-        if pos_hits > neg_hits:
+    for r in results:
+        if r['label'] == 'POSITIVE':
             score += 1
-        elif neg_hits > pos_hits:
+        else:
             score -= 1
 
-    return score / len(news)
+    return score / len(results)
