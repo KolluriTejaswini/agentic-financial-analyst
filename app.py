@@ -3,7 +3,7 @@ import yfinance as yf
 import pandas as pd
 from agent import decision
 
-st.title("📊 Agentic Financial Analyst")
+st.title("📊 Agentic Financial Analyst") 
 
 # --- User Inputs ---
 predicted_price_input = st.number_input("Enter Predicted Price", value=100.0)
